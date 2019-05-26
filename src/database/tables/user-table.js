@@ -32,11 +32,22 @@ const createRow = async data => (await database.query(SQL`
     *;
 `))[0] || null;
 
-const getRows = () => database.query(`
+const getRows = (search, offset, limit) => database.query(SQL`
   SELECT
-    *
+    first_name,
+    last_name
   FROM
-    users;
+    users
+  WHERE
+    first_name ILIKE ('%' || ${search} || '%')
+    OR
+    last_name ILIKE ('%' || ${search} || '%')
+  ORDER BY
+    id ASC
+  LIMIT
+    ${limit}
+  OFFSET
+    ${offset};
 `);
 
 const getRow = async id => (await database.query(SQL`

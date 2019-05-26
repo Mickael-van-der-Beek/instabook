@@ -9,8 +9,23 @@ const userRouter = express.Router();
 
 // Get all users
 userRouter.get('/', async (req, res, next) => {
+  const search = req.query.search;
+  const offset = req.query.offset;
+  let limit = parseInt(req.query.limit, 10);
+
+  if (isNaN(limit)) {
+    return res.sendStatus(400);
+  }
+
+  if (limit > 20) {
+    return res.sendStatus(400);
+  }
+
+  console.log('search=', search, typeof search);
+  console.log('offset=', offset, typeof offset);
+  console.log('limit=', limit, typeof limit);
   try {
-    const users = await userTable.getRows();
+    const users = await userTable.getRows(search, offset, limit);
     return res.json(users);
   } catch (err) {
     return next(err);
